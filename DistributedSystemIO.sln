@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InfrastructureApiCall", "InfrastructureApiCall\InfrastructureApiCall.csproj", "{C3DB5C18-A6B6-4FDB-B0B5-FF9C17684962}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameWebApp", "GameWebApp\GameWebApp.csproj", "{EB407913-3BD5-48FA-A8FC-A3A1F3A96933}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,5 +43,9 @@ Global
 		{C3DB5C18-A6B6-4FDB-B0B5-FF9C17684962}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3DB5C18-A6B6-4FDB-B0B5-FF9C17684962}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3DB5C18-A6B6-4FDB-B0B5-FF9C17684962}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB407913-3BD5-48FA-A8FC-A3A1F3A96933}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB407913-3BD5-48FA-A8FC-A3A1F3A96933}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB407913-3BD5-48FA-A8FC-A3A1F3A96933}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB407913-3BD5-48FA-A8FC-A3A1F3A96933}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

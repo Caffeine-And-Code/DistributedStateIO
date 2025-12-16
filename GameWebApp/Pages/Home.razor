@@ -1,0 +1,71 @@
+﻿@page "/"
+@using GameWebApp.Classes
+@using GameWebApp.Classes.Models
+@using GameWebApp.Classes.Utilities
+@inject IJSRuntime JsRuntime;
+
+<PageTitle>Home</PageTitle>
+
+@if (string.IsNullOrEmpty(_gameConsole))
+{
+    <h1>Hello, world!</h1>
+}
+else
+{
+    <h1>@_gameConsole</h1>
+}
+
+<div id="@JsFunctionProvider.ContainerId" style="width: 1200px; height: 700px;"></div>
+
+@code {
+    private DotNetObjectReference<Home>? _dotNetRef;
+    private string _gameConsole = "";
+    private int? _clickedElementId;
+    private readonly GameEngine _engine = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+
+            await GameEngine.Init(JsRuntime, _dotNetRef);
+
+            _ = _engine.StartGame(JsRuntime);
+        }
+    }
+
+    [JSInvokable]
+    public Task OnTerritoryClicked(string territoryId)
+    {
+        var territoryIdInt = Convert.ToInt32(territoryId);
+
+        if (_clickedElementId.HasValue)
+        {
+            if (_clickedElementId == territoryIdInt)
+            {
+                return Task.CompletedTask;
+            }
+
+            _gameConsole = $"{_clickedElementId} attacca/invia truppe a {territoryId}";
+            _clickedElementId = null;
+            GameData.Attacks.Add(new Attack { From = _clickedElementId.ToString()!, Id = territoryId, Progress = 0, To = territoryId, Troops = 10 });
+            StateHasChanged();
+
+            return Task.CompletedTask;
+        }
+
+        _clickedElementId = territoryIdInt;
+
+        _gameConsole = $"Hai cliccato il territorio: {territoryId}";
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        _dotNetRef?.Dispose();
+    }
+
+}
