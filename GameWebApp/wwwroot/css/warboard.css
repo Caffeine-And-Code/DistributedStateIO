@@ -11,12 +11,6 @@
     display: block;
 }
 
-#map-root {
-    position: absolute;
-    top: 150px;
-    left: 350px;
-}
-
 * {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
