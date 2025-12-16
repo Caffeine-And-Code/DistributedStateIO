@@ -8,4 +8,8 @@
         <UserSecretsId>12e57c70-9969-4c60-9f42-0730f791fb04</UserSecretsId>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\AuthService\AuthService.csproj" />
+    </ItemGroup>
+
 </Project>
