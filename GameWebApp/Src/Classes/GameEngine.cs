@@ -1,6 +1,6 @@
 using GameWebApp.Classes.Models;
 using GameWebApp.Classes.Utilities;
-using GameWebApp.Pages;
+using GameWebApp.Src.Pages;
 using Microsoft.JSInterop;
 using ClockTimer = System.Timers.Timer;
 

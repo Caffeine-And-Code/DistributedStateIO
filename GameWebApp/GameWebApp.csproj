@@ -12,4 +12,16 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.0" PrivateAssets="all"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <AdditionalFiles Include="Src\Layout\MainLayout.razor" />
+      <AdditionalFiles Include="Src\Layout\NavMenu.razor" />
+      <AdditionalFiles Include="Src\Pages\Home.razor" />
+      <AdditionalFiles Include="Src\Pages\NotFound.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Layout\MainLayout.razor" />
+      <_ContentIncludedByDefault Remove="Layout\NavMenu.razor" />
+    </ItemGroup>
+
 </Project>
