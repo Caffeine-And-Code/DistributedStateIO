@@ -4,10 +4,87 @@
     build:
       context: .
       dockerfile: AuthService/Dockerfile
+    ports:
+      - "5003:8080"
+    depends_on:
+      auth-mysql:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    networks:
+      - distributedstateio-net
+  auth-mysql:
+    image: mysql:latest
+    container_name: auth-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: auth
+      MYSQL_USER: authuser
+      MYSQL_PASSWORD: authpass
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "5004:3306"
+    volumes:
+      - auth-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - distributedstateio-net
 
   storeservice:
     image: storeservice
     build:
       context: .
       dockerfile: StoreService/Dockerfile
+    ports:
+      - "5001:8080"
+    depends_on:
+      store-mysql:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    networks:
+      - distributedstateio-net
+  store-mysql:
+    image: mysql:latest
+    container_name: store-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: store
+      MYSQL_USER: storeuser
+      MYSQL_PASSWORD: storepass
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "5002:3306"
+    volumes:
+      - store-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - distributedstateio-net
 
+  webpageservice:
+    image: webpageservice
+    build:
+      context: .
+      dockerfile: WebPageService/Dockerfile
+    ports:
+      - "5005:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    networks:
+      - distributedstateio-net
+
+
+volumes:
+  auth-mysql-data:
+  store-mysql-data:
+networks:
+  distributedstateio-net:
+    external: true

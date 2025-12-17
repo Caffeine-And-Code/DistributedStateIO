@@ -1,0 +1,16 @@
+﻿services:
+  webpageservice:
+    image: webpageservice
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5005:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    networks:
+      - distributedstateio-net
+networks:
+  distributedstateio-net:
+    external: true
+

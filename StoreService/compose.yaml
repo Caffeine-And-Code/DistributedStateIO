@@ -1,0 +1,40 @@
+﻿services:
+  storeservice:
+    image: storeservice
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5001:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    networks:
+      - distributedstateio-net
+  store-mysql:
+    image: mysql:latest
+    container_name: store-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: store
+      MYSQL_USER: storeuser
+      MYSQL_PASSWORD: storepass
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "5002:3306"
+    volumes:
+      - store-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - distributedstateio-net
+volumes:
+  store-mysql-data:
+networks:
+  distributedstateio-net:
+    external: true
