@@ -12,7 +12,7 @@ public class Player
     /// <summary>
     /// If the value is "-1" the player is connected to the game,
     /// else if the value is greater than 0, the player is in waiting for
-    /// reconnection and those are the seconds left for attempting the reconnection 
+    /// reconnection and those are the milliseconds left for attempting the reconnection 
     /// </summary>
-    public int RemainingSecondsForReconnection { get; set; } = -1;
+    public long RemainingMillisecondsForReconnection { get; set; } = -1;
 }
