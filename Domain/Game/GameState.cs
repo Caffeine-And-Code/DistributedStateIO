@@ -2,6 +2,7 @@ namespace Domain.Game;
 
 public class GameState
 {
+    public required Guid GameId { get; set; }
     public required GameConfiguration Configuration { get; set; }
     public required ICollection<Player> Players { get; set; }
     public required ICollection<Territory>  Territories { get; set; }
