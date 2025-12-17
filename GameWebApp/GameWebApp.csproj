@@ -33,6 +33,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Domain\Domain.csproj" />
+      <ProjectReference Include="..\GameEngine\GameEngine.csproj" />
     </ItemGroup>
 
 </Project>

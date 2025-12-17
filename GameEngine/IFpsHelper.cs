@@ -6,7 +6,7 @@ public interface IFpsHelper
     /// save as previous cycle time the current milliseconds
     /// </summary>
     /// <param name="fps">the max FPS of the game (like 30 or 60)</param>
-    public void Initialize(long fps);
+    public void Initialize(int fps);
     /// <summary>
     /// return the elapsed time between previous cycle time and now in milliseconds,
     /// save as previous cycle time the actual cycle time (datetime now)
