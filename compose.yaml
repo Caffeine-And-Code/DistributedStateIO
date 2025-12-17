@@ -1,37 +1,8 @@
 ﻿services:
-  authservice:
-    image: authservice
+  game_web_app:
+    image: game_web_app
     build:
       context: .
-      dockerfile: AuthService/Dockerfile
-
-  storeservice:
-    image: storeservice
-    build:
-      context: .
-      dockerfile: StoreService/Dockerfile
-
-  blazorapp1:
-    image: blazorapp1
-    build:
-      context: .
-      dockerfile: BlazorApp1/BlazorApp1/Dockerfile
-
-  blazorapp1.client:
-    image: blazorapp1.client
-    build:
-      context: .
-      dockerfile: BlazorApp1/BlazorApp1.Client/Dockerfile
-
-  gamewebapp:
-    image: gamewebapp
-    build:
-      context: .
-      dockerfile: GameWebApp/GameWebApp/Dockerfile
-
-  gamewebapp.client:
-    image: gamewebapp.client
-    build:
-      context: .
-      dockerfile: GameWebApp/GameWebApp.Client/Dockerfile
-
+      dockerfile: GameWebApp/Dockerfile
+    ports:
+      - "1234:80"
