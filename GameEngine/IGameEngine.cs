@@ -1,5 +1,5 @@
 using Domain.Game;
-using Domain.Game.Commands;
+using Domain.Game.Events;
 
 namespace GameEngine;
 

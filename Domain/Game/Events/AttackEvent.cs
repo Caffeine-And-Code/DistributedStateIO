@@ -1,4 +1,4 @@
-namespace Domain.Game.Commands;
+namespace Domain.Game.Events;
 
 public class AttackEvent
 {
