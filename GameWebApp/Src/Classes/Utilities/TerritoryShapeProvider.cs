@@ -1,3 +1,4 @@
+using Domain.Game;
 using GameWebApp.Classes.Models;
 
 namespace GameWebApp.Classes.Utilities;
@@ -37,9 +38,19 @@ public sealed class TerritoryShapeProvider
         }
     }
 
-    public ICollection<UiTerritory> GetTerritories()
+    public ICollection<UiTerritory> GetTerritories(ICollection<Territory> updatedTerritories)
     {
-        return _territories!.Values;
+        if (_territories == null)
+        {
+            throw new InvalidOperationException("should not be called before initialization");
+        }
+
+        foreach (var territory in updatedTerritories)
+        {
+            _territories[territory.Id].Troops = territory.Troops;
+        }
+
+        return _territories.Values;
     }
 
     public ICollection<ShapePoint> GetShapesOfTerritory(Guid territoryId)

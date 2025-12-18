@@ -38,7 +38,7 @@ else
 
             _dotNetRef = DotNetObjectReference.Create(this);
             await GameEngine.Init(JsRuntime, _dotNetRef, _serverState);
-            _ = _engine.StartGame(JsRuntime, _serverState).ConfigureAwait(false);
+            await _engine.StartGame(JsRuntime, _serverState);
         }
     }
 

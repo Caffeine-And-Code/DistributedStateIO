@@ -8,7 +8,8 @@ public static class JsFunctionProvider
 {
     public const string ContainerId = "map-root";
 
-    public static async Task InitializeUi<T>(IJSRuntime jsRuntime, DotNetObjectReference<T> dotNetRef, GameState gameState) where T : class
+    public static async Task InitializeUi<T>(IJSRuntime jsRuntime, DotNetObjectReference<T> dotNetRef,
+        GameState gameState) where T : class
     {
         await jsRuntime.InvokeVoidAsync(
             "warboard.init",
@@ -27,8 +28,7 @@ public static class JsFunctionProvider
     public static async Task ConsoleLog(IJSRuntime jsRuntime, string message)
     {
         await jsRuntime.InvokeVoidAsync(
-            "logJS",
-            message
+            "logJS", $"[C#] says: {message}"
         );
     }
 
@@ -37,7 +37,7 @@ public static class JsFunctionProvider
         await jsRuntime.InvokeVoidAsync(
             "warboard.render",
             ContainerId,
-            TerritoryShapeProvider.Instance.GetTerritories(),
+            TerritoryShapeProvider.Instance.GetTerritories(gameState.Territories),
             gameState.Attacks,
             null // territorio selezionato
         );

@@ -79,7 +79,7 @@
                     const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
                     poly.setAttribute('points', NS.shapeToPoints(t.shape));
                     poly.addEventListener('click', onClickAction);
-                    let color = "";
+                    let color;
                     if (t.ownerId === undefined || t.ownerId === null) {
                         color = s.neutralColor
                     } else {
@@ -114,11 +114,21 @@
 
                     // salva il riferimento per i prossimi render
                     this.territoryGroups.set(t.id, grp);
+                    s.territoriesMap.set(t.id, t);
+                    
+                    return;
                 }
+                grp = this.territoryGroups.get(t.id);
 
                 // aggiorna proprietà esistenti
                 const poly = grp.querySelector('polygon');
-                poly.setAttribute('fill', t.owner === null ? s.neutralColor : s.playerColors[t.owner % s.playerColors.length]);
+                let color;
+                if (t.ownerId === undefined || t.ownerId === null) {
+                    color = s.neutralColor
+                } else {
+                    color = s.playerColors.at(this.playerIds.indexOf(t.ownerId));
+                }
+                poly.setAttribute('fill', color);
 
                 const txt = grp.querySelector('text');
                 txt.textContent = t.troops;
@@ -135,8 +145,9 @@
             const ag = rootElement.attacksG;
             ag.innerHTML = '';
             attacks.forEach(a => {
-                const f = NS.centroid(s.territoriesMap.get(a.from).shape);
-                const t = NS.centroid(s.territoriesMap.get(a.to).shape);
+                const attackerTerritory = rootElement.territoriesMap.get(a.attackerTerritoryId)
+                const f = NS.centroid(attackerTerritory.shape);
+                const t = NS.centroid(rootElement.territoriesMap.get(a.defenderTerritoryId).shape);
                 const cx = (f.x + t.x) / 2, cy = (f.y + t.y) / 2 - 60;
                 const p = Math.max(0, Math.min(1, a.progress));
                 const px = (1 - p) * (1 - p) * f.x + 2 * (1 - p) * p * cx + p * p * t.x;
@@ -145,14 +156,13 @@
                 grp.setAttribute('transform', `translate(${px - 10},${py - 10})`);
                 const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                 c.setAttribute('r', '12');
-                c.setAttribute('fill', '#ff0000');
+                c.setAttribute('fill', rootElement.playerColors.at(this.playerIds.indexOf(attackerTerritory.ownerId)));
                 grp.appendChild(c);
                 ag.appendChild(grp);
             });
         },
         onTerritoryClicked(id, territory) {
             const s = NS.containers.get(id);
-            console.log(territory)
             if (s.dotNetRef) s.dotNetRef.invokeMethodAsync('OnTerritoryClicked', territory);
         },
         dispose(id) {

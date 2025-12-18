@@ -6,7 +6,7 @@ namespace GameWebApp.Classes;
 
 public class EventDispatcher : IEventDispatcher
 {
-    public GameState DispatchAttacks(GameState gameState,ref List<AttackEvent> attacksQueue)
+    public GameState DispatchAttacks(GameState gameState, ref List<AttackEvent> attacksQueue)
     {
         foreach (var attackEvent in attacksQueue)
         {
@@ -25,6 +25,10 @@ public class EventDispatcher : IEventDispatcher
                 Troops = attackEvent.Troops,
                 Progress = 0
             });
+            // update the attacker territory
+            attackerTerritory.Troops -= attackEvent.Troops;
+            gameState.Territories.Remove(attackerTerritory);
+            gameState.Territories.Add(attackerTerritory);
         }
 
         attacksQueue.Clear();

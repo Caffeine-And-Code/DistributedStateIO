@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Domain.Game;
 using GameWebApp.Classes.Utilities;
 using GameWebApp.Src.Pages;
@@ -19,7 +20,7 @@ public class GameEngine(GameSettings gameSettings) : HeadlessGameEngine(gameSett
     public async Task StartGame(IJSRuntime jsRuntime, GameState gameState)
     {
         _fpsHelper.Initialize(gameSettings.Fps);
-        TerritoryShapeProvider.Instance.Initialize(Factory.GetUiTerritories(gameState.Players));
+        TerritoryShapeProvider.Instance.Initialize(Factory.GetUiTerritories(gameState.Players, gameState.Territories));
 
         while (true)
         {
@@ -29,10 +30,10 @@ public class GameEngine(GameSettings gameSettings) : HeadlessGameEngine(gameSett
             await _fpsHelper.WaitForNextFrame();
             _fpsHelper.Initialize(gameSettings.Fps);
 
-            if (_attackTimer is not null)
-            {
-                continue;
-            }
+            //if (_attackTimer is not null)
+            //{
+            //    continue;
+            //}
 
             // === TIMER DELL’ANIMAZIONE ===
             //_attackTimer = new ClockTimer(50);
