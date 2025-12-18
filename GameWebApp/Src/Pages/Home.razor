@@ -1,8 +1,12 @@
 ﻿@page "/"
+@using Domain.Game
+@using Domain.Game.Events
 @using GameWebApp.Classes
 @using GameWebApp.Classes.Models
 @using GameWebApp.Classes.Utilities
+
 @inject IJSRuntime JsRuntime;
+@inject IConfiguration Configuration
 
 <PageTitle>Home</PageTitle>
 
@@ -20,44 +24,50 @@ else
 @code {
     private DotNetObjectReference<Home>? _dotNetRef;
     private string _gameConsole = "";
-    private int? _clickedElementId;
-    private readonly GameEngine _engine = new();
+    private GameEngine _engine = null!;
+    private UiTerritory? _clickedElement;
+
+    //TODO: when backend is ready, the initial value of this should be retrieved from it
+    private readonly GameState _serverState = Factory.GetFirstGameState();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            _engine = new GameEngine(GameSettingsLoader.Load(Configuration));
+
             _dotNetRef = DotNetObjectReference.Create(this);
-
-            await GameEngine.Init(JsRuntime, _dotNetRef);
-
-            _ = _engine.StartGame(JsRuntime);
+            await GameEngine.Init(JsRuntime, _dotNetRef, _serverState);
+            _ = _engine.StartGame(JsRuntime, _serverState).ConfigureAwait(false);
         }
     }
 
     [JSInvokable]
-    public Task OnTerritoryClicked(string territoryId)
+    public Task OnTerritoryClicked(UiTerritory territory)
     {
-        var territoryIdInt = Convert.ToInt32(territoryId);
-
-        if (_clickedElementId.HasValue)
+        if (_clickedElement is not null)
         {
-            if (_clickedElementId == territoryIdInt)
+            if (_clickedElement.Id == territory.Id )
             {
                 return Task.CompletedTask;
             }
-
-            _gameConsole = $"{_clickedElementId} attacca/invia truppe a {territoryId}";
-            _clickedElementId = null;
-            GameData.Attacks.Add(new Attack { From = _clickedElementId.ToString()!, Id = territoryId, Progress = 0, To = territoryId, Troops = 10 });
+            
+            _gameConsole = $"{_clickedElement.OwnerId} attacca/invia truppe a {territory.OwnerId}";
+            _engine.AddAttackEvent(new AttackEvent
+            {
+                AttackerTerritoryId = _clickedElement.Id,
+                DefenderTerritoryId = territory.Id,
+                Troops = territory.Troops - 1 
+            });
+            _clickedElement = null;
             StateHasChanged();
 
             return Task.CompletedTask;
         }
 
-        _clickedElementId = territoryIdInt;
+        _clickedElement = territory;
 
-        _gameConsole = $"Hai cliccato il territorio: {territoryId}";
+        _gameConsole = $"Hai cliccato il territorio di: {territory.OwnerId}";
         StateHasChanged();
 
         return Task.CompletedTask;

@@ -1,7 +1,10 @@
 (function (global) {
     const NS = {
         containers: new Map(),
+        territoryGroups: new Map(),
+        playerIds: [],
         init(containerId, dotNetRef, options = {}) {
+            this.playerIds = options.playerIds;
             const container = document.getElementById(containerId);
             if (!container) throw new Error('Container not found:' + containerId);
             container.innerHTML = '';
@@ -58,47 +61,78 @@
         render(containerId, territories, attacks, selected) {
             const s = NS.containers.get(containerId);
             s.selected = selected;
-            s.territoriesMap.clear();
-            territories.forEach(t => s.territoriesMap.set(t.id, t));
+
             const g = s.territoriesG;
-            g.innerHTML = '';
 
             territories.forEach(t => {
-                const onClickAction = (e) => {
-                    e.stopPropagation()
-                    NS.onTerritoryClicked(containerId, t.id)
+                // Controlla se esiste già un gruppo per questo territorio
+                let grp;
+                if (!this.territoryGroups.has(t.id)) {
+                    // crea nuovo gruppo
+                    grp = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    const onClickAction = (e) => {
+                        e.stopPropagation();
+                        NS.onTerritoryClicked(containerId, t);
+                    }
+
+                    // polygon principale
+                    const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                    poly.setAttribute('points', NS.shapeToPoints(t.shape));
+                    poly.addEventListener('click', onClickAction);
+                    let color = "";
+                    if (t.ownerId === undefined || t.ownerId === null) {
+                        color = s.neutralColor
+                    } else {
+                        color = s.playerColors.at(this.playerIds.indexOf(t.ownerId));
+                    }
+
+                    poly.style.fill = color;
+                    grp.appendChild(poly);
+
+                    // centroide + etichetta truppe
+                    const c = NS.centroid(t.shape);
+                    const lg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    lg.setAttribute('transform', `translate(${c.x},${c.y})`);
+
+                    const cir = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    cir.setAttribute('r', '22');
+                    cir.setAttribute('fill', 'rgba(0,0,0,0.35)');
+                    cir.addEventListener('click', onClickAction);
+
+                    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    txt.setAttribute('y', '6');
+                    txt.setAttribute('text-anchor', 'middle');
+                    txt.setAttribute('fill', '#fff');
+                    txt.textContent = t.troops;
+                    txt.addEventListener('click', onClickAction);
+
+                    lg.appendChild(cir);
+                    lg.appendChild(txt);
+                    grp.appendChild(lg);
+
+                    g.appendChild(grp);
+
+                    // salva il riferimento per i prossimi render
+                    this.territoryGroups.set(t.id, grp);
                 }
-                const grp = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-                poly.setAttribute('points', NS.shapeToPoints(t.shape));
+
+                // aggiorna proprietà esistenti
+                const poly = grp.querySelector('polygon');
                 poly.setAttribute('fill', t.owner === null ? s.neutralColor : s.playerColors[t.owner % s.playerColors.length]);
-                poly.addEventListener('click', onClickAction);
-                grp.appendChild(poly);
 
-                const c = NS.centroid(t.shape);
-                const lg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                lg.setAttribute('transform', `translate(${c.x},${c.y})`);
-
-                const cir = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                cir.setAttribute('r', '22');
-                cir.setAttribute('fill', 'rgba(0,0,0,0.35)');
-                cir.addEventListener('click', onClickAction);
-
-                const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                txt.setAttribute('y', '6');
-                txt.setAttribute('text-anchor', 'middle');
-                txt.setAttribute('fill', '#fff');
+                const txt = grp.querySelector('text');
                 txt.textContent = t.troops;
-                txt.addEventListener('click', onClickAction);
-                lg.appendChild(cir);
-                lg.appendChild(txt);
-                grp.appendChild(lg);
-                g.appendChild(grp);
+
+                const lg = grp.querySelector('g');
+                const c = NS.centroid(t.shape);
+                lg.setAttribute('transform', `translate(${c.x},${c.y})`);
             });
-            this.drawAttacks(attacks);
+
+            // disegna gli attacchi
+            this.drawAttacks(attacks, s);
         },
-        drawAttacks(attacks) {
-            const ag = s.attacksG;
+        drawAttacks(attacks, rootElement) {
+            const ag = rootElement.attacksG;
             ag.innerHTML = '';
             attacks.forEach(a => {
                 const f = NS.centroid(s.territoriesMap.get(a.from).shape);
@@ -116,9 +150,10 @@
                 ag.appendChild(grp);
             });
         },
-        onTerritoryClicked(id, tid) {
+        onTerritoryClicked(id, territory) {
             const s = NS.containers.get(id);
-            if (s.dotNetRef) s.dotNetRef.invokeMethodAsync('OnTerritoryClicked', tid);
+            console.log(territory)
+            if (s.dotNetRef) s.dotNetRef.invokeMethodAsync('OnTerritoryClicked', territory);
         },
         dispose(id) {
             const s = NS.containers.get(id);

@@ -5,12 +5,11 @@ using Microsoft.Extensions.Options;
 
 namespace GameWebApp.Classes;
 
-public class HeadlessGameEngine(IOptions<GameSettings> gameSettings) : IGameEngine
+public class HeadlessGameEngine(GameSettings gameSettings) : IGameEngine
 {
     private List<AttackEvent> _attackQueue = [];
     private List<PlayerDisconnectedEvent> _disconnectedEvents = [];
-    private readonly IEventDispatcher _dispatcher = new EventDispatcher();
-    private readonly GameSettings _gameSettings = gameSettings.Value;
+    private readonly EventDispatcher _dispatcher = new();
 
     public void AddAttackEvent(AttackEvent attackEvent) => _attackQueue.Add(attackEvent);
 
@@ -28,7 +27,7 @@ public class HeadlessGameEngine(IOptions<GameSettings> gameSettings) : IGameEngi
     private GameState DispatchEvents(GameState gameState)
     {
         gameState = _dispatcher.DispatchPlayersDisconnected(gameState, ref _disconnectedEvents,
-            _gameSettings.DisconnectedTimerStartingPoint);
+            gameSettings.DisconnectedTimerStartingPoint);
 
         return _dispatcher.DispatchAttacks(gameState, ref _attackQueue);
     }

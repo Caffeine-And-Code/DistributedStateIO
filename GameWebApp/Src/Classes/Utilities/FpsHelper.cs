@@ -17,9 +17,10 @@ public class FpsHelper : IFpsHelper
 
     public long GetElapsedTime()
     {
-        var currentCycleTime = GetCurrentMilliseconds() - PreviousCycleTime;
-        PreviousCycleTime = GetCurrentMilliseconds();
-        return currentCycleTime;
+        var current = GetCurrentMilliseconds();
+        var elapsed = current - PreviousCycleTime;
+        PreviousCycleTime = current;
+        return elapsed;
     }
 
     public async Task WaitForNextFrame()
