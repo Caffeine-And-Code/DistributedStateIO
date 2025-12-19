@@ -15,7 +15,6 @@
 
     <ItemGroup>
       <AdditionalFiles Include="Src\Layout\MainLayout.razor" />
-      <AdditionalFiles Include="Src\Layout\NavMenu.razor" />
       <AdditionalFiles Include="Src\Pages\Home.razor" />
       <AdditionalFiles Include="Src\Pages\NotFound.razor" />
     </ItemGroup>

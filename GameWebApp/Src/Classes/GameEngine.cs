@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Domain.Game;
 using GameWebApp.Classes.Utilities;
 using GameWebApp.Src.Pages;
@@ -11,6 +10,7 @@ public class GameEngine(GameSettings gameSettings) : HeadlessGameEngine(gameSett
 {
     private ClockTimer? _attackTimer;
     private readonly FpsHelper _fpsHelper = new();
+    private readonly GameSettings _gameSettings = gameSettings;
 
     public static async Task Init(IJSRuntime jsRuntime, DotNetObjectReference<Home> dotNetRef, GameState gameState)
     {
@@ -19,7 +19,7 @@ public class GameEngine(GameSettings gameSettings) : HeadlessGameEngine(gameSett
 
     public async Task StartGame(IJSRuntime jsRuntime, GameState gameState)
     {
-        _fpsHelper.Initialize(gameSettings.Fps);
+        _fpsHelper.Initialize(_gameSettings.Fps);
         TerritoryShapeProvider.Instance.Initialize(Factory.GetUiTerritories(gameState.Players, gameState.Territories));
 
         while (true)
@@ -28,39 +28,44 @@ public class GameEngine(GameSettings gameSettings) : HeadlessGameEngine(gameSett
             await JsFunctionProvider.RenderUi(jsRuntime, gameState);
 
             await _fpsHelper.WaitForNextFrame();
-            _fpsHelper.Initialize(gameSettings.Fps);
+            _fpsHelper.Initialize(_gameSettings.Fps);
 
-            //if (_attackTimer is not null)
-            //{
-            //    continue;
-            //}
+            if (_attackTimer is not null)
+            {
+                continue;
+            }
 
             // === TIMER DELL’ANIMAZIONE ===
-            //_attackTimer = new ClockTimer(50);
-            //_attackTimer.Elapsed += async (_, __) => await UpdateAttacks(jsRuntime);
-            //_attackTimer.Start();
+            _attackTimer = new ClockTimer(50);
+            var state = gameState;
+            _attackTimer.Elapsed += async (_, __) => gameState = await UpdateAttacks(jsRuntime, state);
+            _attackTimer.Start();
         }
+        // ReSharper disable once FunctionNeverReturns
     }
 
-    //private async Task UpdateAttacks(IJSRuntime jsRuntime)
-    //{
-    //    var needsRefresh = false;
-//
-    //    foreach (var attack in GameData.Attacks.ToList())
-    //    {
-    //        attack.Progress += 0.015;
-    //        await JsFunctionProvider.ConsoleLog(jsRuntime, $"Update Attacks {attack.Progress}");
-//
-    //        if (attack.Progress >= 1)
-    //        {
-    //            // TODO: risolvi battaglia come nel tuo engine
-    //            GameData.Attacks.Remove(attack);
-    //        }
-//
-    //        needsRefresh = true;
-    //    }
-//
-    //    if (needsRefresh)
-    //        await jsRuntime.InvokeVoidAsync("warboard.drawAttacks", "map-root", GameData.Attacks);
-    //}
+    private async Task<GameState> UpdateAttacks(IJSRuntime jsRuntime, GameState gameState)
+    {
+        var needsRefresh = false;
+
+        foreach (var attack in gameState.Attacks.ToList())
+        {
+            const int attackPercentageOfMovement = 10;
+            attack.Progress += attackPercentageOfMovement * 100;
+            await JsFunctionProvider.ConsoleLog(jsRuntime, $"Update Attacks {attack.Progress}");
+
+            if (attack.Progress >= 10000)
+            {
+                // TODO: risolvi battaglia come nel tuo engine
+                gameState.Attacks.Remove(attack);
+            }
+
+            needsRefresh = true;
+        }
+
+        if (needsRefresh)
+            await JsFunctionProvider.renderAttacks(jsRuntime, gameState);
+
+        return gameState;
+    }
 }

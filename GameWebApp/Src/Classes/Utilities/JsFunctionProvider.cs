@@ -42,4 +42,9 @@ public static class JsFunctionProvider
             null // territorio selezionato
         );
     }
+
+    public static async Task renderAttacks(IJSRuntime jsRuntime, GameState gameState)
+    {
+        await jsRuntime.InvokeVoidAsync("warboard.drawAttacksGivenId", gameState.Attacks, "map-root");
+    }
 }

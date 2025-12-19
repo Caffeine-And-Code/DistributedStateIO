@@ -141,6 +141,10 @@
             // disegna gli attacchi
             this.drawAttacks(attacks, s);
         },
+        drawAttacksGivenId(attacks, id) {
+          const rootElement = NS.containers.get(id);
+          this.drawAttacks(attacks, rootElement);
+        },
         drawAttacks(attacks, rootElement) {
             const ag = rootElement.attacksG;
             ag.innerHTML = '';
