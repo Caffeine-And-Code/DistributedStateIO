@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using AuthService.Data;
 using AuthService.Interfaces;
 using AuthService.Repositories;
-using AuthService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

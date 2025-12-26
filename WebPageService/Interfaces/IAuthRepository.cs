@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
-using WebPageService.Entities;
-using WebPageService.Entities.DTOs;
-using WebPageService.Entities.DTOs.Auth;
+using Domain.Services.Auth.DTOs;
 
 namespace WebPageService.Interfaces;
 

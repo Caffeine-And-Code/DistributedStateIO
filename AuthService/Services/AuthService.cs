@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
-using AuthService.Entities;
 using AuthService.Interfaces;
+using Domain.Services.Auth.Entities;
 
 namespace AuthService.Services;
 

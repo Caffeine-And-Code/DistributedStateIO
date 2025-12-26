@@ -1,4 +1,4 @@
-namespace WebPageService.Entities;
+namespace Domain.Services.Store.Entities;
 
 public class Match
 {

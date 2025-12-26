@@ -1,5 +1,5 @@
+using Domain.Services.Store.Entities;
 using Microsoft.EntityFrameworkCore;
-using StoreService.Entities;
 
 namespace StoreService.Data;
 

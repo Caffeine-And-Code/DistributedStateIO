@@ -1,4 +1,4 @@
-namespace StoreService.Entities.DTOs;
+namespace Domain.Services.Store.DTOs;
 
 public class LeaderboardUserDto
 {

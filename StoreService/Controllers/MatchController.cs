@@ -1,4 +1,4 @@
-using StoreService.Entities.DTOs;
+using Domain.Services.Store.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using StoreService.Interfaces;
 

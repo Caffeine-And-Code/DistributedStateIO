@@ -1,7 +1,5 @@
-using WebPageService.Entities;
-using WebPageService.Entities.DTOs;
-using WebPageService.Entities.DTOs.Auth;
-using WebPageService.Entities.DTOs.Store;
+using Domain.Services.Auth.DTOs;
+using Domain.Services.Store.DTOs;
 
 namespace WebPageService.Interfaces;
 

@@ -1,11 +1,7 @@
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using WebPageService.Entities.DTOs.Auth;
 using WebPageService.Interfaces;
 using System.Text.Json;
-using Microsoft.AspNetCore.Mvc;
-using WebPageService.Entities;
-using WebPageService.Entities.DTOs;
+using Domain.Services.Auth.DTOs;
 
 namespace WebPageService.Repositories;
 

@@ -1,4 +1,4 @@
-namespace AuthService.Entities.DTOs;
+namespace Domain.Services.Auth.DTOs;
 
 public class UserDto
 {

@@ -1,4 +1,4 @@
-using WebPageService.Entities.DTOs.Store;
+using Domain.Services.Store.DTOs;
 
 namespace WebPageService.Interfaces;
 

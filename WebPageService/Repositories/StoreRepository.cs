@@ -1,7 +1,6 @@
-using System.Net.Http.Json;
-using WebPageService.Entities.DTOs.Store;
 using WebPageService.Interfaces;
 using System.Text.Json;
+using Domain.Services.Store.DTOs;
 
 namespace WebPageService.Repositories;
 

@@ -1,4 +1,4 @@
-using StoreService.Entities;
+using Domain.Services.Store.Entities;
 
 namespace StoreService.Interfaces;
 

@@ -1,5 +1,5 @@
+using Domain.Services.Auth.Entities;
 using Microsoft.EntityFrameworkCore;
-using AuthService.Entities;
 
 namespace AuthService.Data;
 

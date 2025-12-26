@@ -1,4 +1,4 @@
-namespace StoreService.Entities;
+namespace Domain.Services.Store.Entities;
 
 public class MatchUser
 {

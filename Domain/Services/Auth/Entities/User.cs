@@ -1,4 +1,4 @@
-namespace WebPageService.Entities;
+namespace Domain.Services.Auth.Entities;
 
 public class User
 {

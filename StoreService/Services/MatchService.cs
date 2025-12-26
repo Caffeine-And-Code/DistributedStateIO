@@ -1,5 +1,5 @@
-using StoreService.Entities;
-using StoreService.Entities.DTOs;
+using Domain.Services.Store.DTOs;
+using Domain.Services.Store.Entities;
 using StoreService.Interfaces;
 
 namespace StoreService.Services;

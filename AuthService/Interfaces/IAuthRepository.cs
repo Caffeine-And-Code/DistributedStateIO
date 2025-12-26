@@ -1,4 +1,4 @@
-using AuthService.Entities;
+using Domain.Services.Auth.Entities;
 
 namespace AuthService.Interfaces;
 

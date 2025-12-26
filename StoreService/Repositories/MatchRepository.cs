@@ -1,6 +1,6 @@
+using Domain.Services.Store.Entities;
 using Microsoft.EntityFrameworkCore;
 using StoreService.Data;
-using StoreService.Entities;
 using StoreService.Interfaces;
 
 namespace StoreService.Repositories;
