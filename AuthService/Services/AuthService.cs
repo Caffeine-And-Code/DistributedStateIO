@@ -23,11 +23,10 @@ public class AuthService : IAuthService
         return Convert.ToHexString(hashed); 
     }
 
-    public async Task<User> CreateUserAsync(string username, string passwordPlain)
+    public async Task CreateUserAsync(string username, string passwordPlain)
     {
         var existing = await _repo.GetByUsernameAsync(username);
-        if (existing != null)
-            throw new InvalidOperationException("Username already exists.");
+        if (existing != null) throw new InvalidOperationException("User already exists");
 
         var user = new User
         {
@@ -36,15 +35,14 @@ public class AuthService : IAuthService
             Token = null
         };
 
-        return await _repo.CreateUserAsync(user);
+        await _repo.CreateAsync(user);
     }
 
-    public async Task<bool> DeleteUserAsync(int id, string token)
+    public async Task<bool> DeleteByTokenAsync(string token)
     {
-        var user = await _repo.GetByIdAsync(id);
+        if (string.IsNullOrWhiteSpace(token)) return false;
+        var user = await _repo.GetByTokenAsync(token);
         if (user == null) return false;
-        if (user.Token != token) return false;
-
         await _repo.DeleteAsync(user);
         return true;
     }
@@ -75,6 +73,11 @@ public class AuthService : IAuthService
     {
         var user = await _repo.GetByTokenAsync(token);
         return user?.Username;
+    }
+    
+    public Task<int?> GetUserIdByTokenAsync(string token)
+    {
+        return _repo.GetUserIdByTokenAsync(token);
     }
 
     public async Task<string?> GetUsernameByIdAsync(int id)

@@ -17,29 +17,32 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<ActionResult<UserResponse>> Create([FromBody] UserDto dto)
+    public async Task<IActionResult> Create([FromBody] UserDto dto)
     {
-        var user = await _service.CreateUserAsync(dto.Username, dto.Password);
+        if (string.IsNullOrWhiteSpace(dto.Username) || string.IsNullOrWhiteSpace(dto.Password))
+            return BadRequest(new { message = "Missing username or password" });
 
-        var response = new UserResponse
+        try
         {
-            Id = user.Id,
-            Username = user.Username
-        };
-
-        // Se hai GetById implementato, usa CreatedAtAction
-        return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+            await _service.CreateUserAsync(dto.Username, dto.Password);
+            return Created(string.Empty, new { message = "User created successfully" });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
-
-    [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id, [FromHeader(Name = "Authorization")] string? token)
+    
+    [HttpDelete]
+    public async Task<IActionResult> DeleteByToken([FromHeader(Name = "Authorization")] string? token)
     {
         if (string.IsNullOrWhiteSpace(token))
-            return Unauthorized(new { message = "Missing token in Authorization header" });
+            return BadRequest(new { message = "Missing token in Authorization header" });
 
-        var ok = await _service.DeleteUserAsync(id, token);
-        if (!ok) return Unauthorized(new { message = "Invalid token or user not found" });
-        return NoContent();
+        var deleted = await _service.DeleteByTokenAsync(token);
+        if (!deleted) return Unauthorized(new { message = "Invalid token or user not found" });
+
+        return Ok(new { message = "User deleted" });
     }
 
     [HttpPost("login")]
@@ -66,6 +69,25 @@ public class AuthController : ControllerBase
         var username = await _service.GetUsernameByTokenAsync(token);
         if (username == null) return Unauthorized(new { message = "Invalid token" });
         return Ok(new { username });
+    }
+    
+    [HttpGet("bytoken/id")]
+    public async Task<IActionResult> GetUserIdByToken(
+        [FromHeader(Name = "Authorization")] string? auth)
+    {
+        if (string.IsNullOrWhiteSpace(auth))
+            return Unauthorized();
+
+        var token = auth.StartsWith("Bearer ")
+            ? auth.Substring(7)
+            : auth;
+
+        var userId = await _service.GetUserIdByTokenAsync(token);
+
+        if (userId == null)
+            return Unauthorized();
+
+        return Ok(new { userId });
     }
 
     [HttpGet("{id:int}")]

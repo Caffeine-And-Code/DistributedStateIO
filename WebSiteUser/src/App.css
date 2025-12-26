@@ -159,6 +159,7 @@ body {
   padding: 4px 8px;
   font-size: 1rem;
   width: 80%;
+  max-width: 300px;
 }
 
 .login-form-buttons {
@@ -176,4 +177,9 @@ body {
   cursor: pointer;
 }
 
-
+.auth-error {
+  margin-top: 12px;
+  color: white;
+  font-size: 0.9rem;
+  text-align: center;
+}

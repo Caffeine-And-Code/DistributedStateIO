@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using WebPageService.Entities.DTOs.Auth;
 using WebPageService.Interfaces;
@@ -15,22 +16,32 @@ public class AuthRepository : IAuthRepository
 
     public AuthRepository(HttpClient http) => _http = http;
 
-    public async Task<UserResponse> CreateUserAsync(UserDto dto)
+    public async Task<string> CreateUserAsync(UserDto dto)
     {
         var res = await _http.PostAsJsonAsync("create", dto);
-        res.EnsureSuccessStatusCode();
-        var created = await res.Content.ReadFromJsonAsync<UserResponse>(_jsonOpts);
 
-        if (created == null)
-            throw new InvalidOperationException("Auth service returned empty response.");
+        var json = await res.Content.ReadFromJsonAsync<JsonElement>(_jsonOpts);
 
-        return created;
+        if (!res.IsSuccessStatusCode)
+        {
+            var msg = json.TryGetProperty("message", out var m)
+                ? m.GetString()
+                : "User creation failed";
+
+            throw new InvalidOperationException(msg);
+        }
+
+        if (json.TryGetProperty("message", out var message))
+            return message.GetString() ?? "User created";
+
+        return "User created";
     }
 
-    public async Task<bool> DeleteUserAsync(int id, string token)
+    public async Task<bool> DeleteUserAsync(string token)
     {
-        var req = new HttpRequestMessage(HttpMethod.Delete, $"{id}");
-        req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        var req = new HttpRequestMessage(HttpMethod.Delete, "");
+        req.Headers.Add("Authorization", token);
+
         var res = await _http.SendAsync(req);
         return res.IsSuccessStatusCode;
     }
@@ -40,7 +51,6 @@ public class AuthRepository : IAuthRepository
         var res = await _http.PostAsJsonAsync("login", dto);
         if (!res.IsSuccessStatusCode) return null;
 
-        // Expecting { token: "..." }
         var doc = await res.Content.ReadFromJsonAsync<JsonElement?>(_jsonOpts);
         if (doc.HasValue)
         {
@@ -55,7 +65,7 @@ public class AuthRepository : IAuthRepository
     public async Task LogoutAsync(string token)
     {
         var req = new HttpRequestMessage(HttpMethod.Post, "logout");
-        req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(token);
         var res = await _http.SendAsync(req);
         res.EnsureSuccessStatusCode();
     }
@@ -63,7 +73,7 @@ public class AuthRepository : IAuthRepository
     public async Task<string?> GetUsernameByTokenAsync(string token)
     {
         var req = new HttpRequestMessage(HttpMethod.Get, "bytoken");
-        req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        req.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue(token);
         var res = await _http.SendAsync(req);
         if (!res.IsSuccessStatusCode) return null;
 
@@ -79,6 +89,23 @@ public class AuthRepository : IAuthRepository
 
         var doc = await res.Content.ReadFromJsonAsync<JsonElement?>(_jsonOpts);
         if (doc.HasValue && doc.Value.TryGetProperty("username", out var u)) return u.GetString();
+        return null;
+    }
+    
+    public async Task<int?> GetUserIdByTokenAsync(string token)
+    {
+        var req = new HttpRequestMessage(HttpMethod.Get, "bytoken/id");
+        req.Headers.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        var res = await _http.SendAsync(req);
+        if (!res.IsSuccessStatusCode)
+            return null;
+
+        var json = await res.Content.ReadFromJsonAsync<JsonElement>();
+        if (json.TryGetProperty("userId", out var id))
+            return id.GetInt32();
+
         return null;
     }
 }

@@ -16,13 +16,17 @@ public class WebController : ControllerBase
     public WebController(IWebService service) => _service = service;
 
     [HttpPost("register")]
-    public async Task<UserResponse> Register([FromBody] UserDto dto)
+    public async Task<IActionResult> Register([FromBody] UserDto dto)
     {
-        var user = await _service.RegisterAsync(dto);
-        var res = new UserResponse();
-        res.Id = user.Id;
-        res.Username = user.Username;
-        return res;
+        try
+        {
+            var message = await _service.RegisterAsync(dto);
+            return Ok(new { message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
 
     [HttpPost("login")]
@@ -42,12 +46,12 @@ public class WebController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete("users/{id:int}")]
-    public async Task<IActionResult> DeleteUser(int id, [FromHeader(Name = "Authorization")] string? auth)
+    [HttpDelete("users")]
+    public async Task<IActionResult> DeleteUser([FromHeader(Name = "Authorization")] string? auth)
     {
         if (string.IsNullOrWhiteSpace(auth)) return Unauthorized();
         var token = auth.StartsWith("Bearer ") ? auth.Substring(7) : auth;
-        var ok = await _service.DeleteUserAsync(id, token);
+        var ok = await _service.DeleteUserAsync(token);
         if (!ok) return Unauthorized();
         return NoContent();
     }
@@ -73,14 +77,23 @@ public class WebController : ControllerBase
     [HttpGet("leaderboard")]
     public async Task<IActionResult> Leaderboard([FromQuery] int topN = 10, [FromQuery] int lastM = 5)
     {
-        var result = await _service.GetLeaderboardAsync(topN, lastM);
+        var result = await _service.GetLeaderboardViewAsync(topN, lastM);
         return Ok(result);
     }
 
-    [HttpGet("users/{userId:int}/matches")]
-    public async Task<IActionResult> UserMatches(int userId, [FromQuery] int lastN = 5)
+    [HttpGet("me/matches")]
+    public async Task<IActionResult> MyMatches(
+        [FromHeader(Name = "Authorization")] string? auth,
+        [FromQuery] int lastN = 5)
     {
-        var result = await _service.GetUserLastMatchesAsync(userId, lastN);
-        return Ok(result);
+        if (string.IsNullOrWhiteSpace(auth))
+            return Unauthorized();
+
+        var token = auth.StartsWith("Bearer ")
+            ? auth.Substring(7)
+            : auth;
+
+        var matches = await _service.GetMyLastMatchesAsync(token, lastN);
+        return Ok(matches);
     }
 }

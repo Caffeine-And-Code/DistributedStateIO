@@ -4,31 +4,34 @@ import { MatchItem } from "./MatchItem";
 
 interface Props {
   matches: Match[];
-  userId: number;
+  isLogged: boolean;
 }
 
-export const UserMatches: React.FC<Props> = ({ matches, userId }) => {
+export const UserMatches: React.FC<Props> = ({ matches, isLogged }) => {
+  if (!isLogged) {
+    return (
+      <div className="leaderboard">
+        <h3>Last matches</h3>
+        <p>Login to see your last matches</p>
+      </div>
+    );
+  }
 
   if (matches.length === 0) {
     return (
-    <div className="leaderboard">
-      <h3>Last matches</h3>
-      <div>
+      <div className="leaderboard">
+        <h3>Last matches</h3>
         <p>No matches</p>
       </div>
-    </div>
-  );
+    );
   }
 
   return (
     <div className="leaderboard">
       <h3>Last matches</h3>
-      <div>
-        
-        {matches.map((m) => (
-          <MatchItem key={m.id} match={m} userId={userId} />
-        ))}
-      </div>
+      {matches.map((m) => (
+        <MatchItem key={m.id} match={m} />
+      ))}
     </div>
   );
 };

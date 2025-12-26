@@ -7,10 +7,11 @@ namespace WebPageService.Interfaces;
 
 public interface IAuthRepository
 {
-    Task<UserResponse> CreateUserAsync(UserDto dto);
-    Task<bool> DeleteUserAsync(int id, string token);
+    Task<string> CreateUserAsync(UserDto dto);
+    Task<bool> DeleteUserAsync(string token);
     Task<string?> LoginAsync(UserDto dto);
     Task LogoutAsync(string token);
     Task<string?> GetUsernameByTokenAsync(string token);
+    Task<int?> GetUserIdByTokenAsync(string token);
     Task<string?> GetUsernameByIdAsync(int id);
 }

@@ -4,10 +4,9 @@ import "../../App.css";
 
 interface Props {
   match: Match;
-  userId: number;
 }
 
-export const MatchItem: React.FC<Props> = ({ match, userId }) => {
+export const MatchItem: React.FC<Props> = ({ match }) => {
   return (
     <div className="match-item">
       <div>{new Date(match.date).toLocaleDateString()}</div>
