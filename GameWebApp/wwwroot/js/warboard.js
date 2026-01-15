@@ -61,19 +61,20 @@
         render(containerId, territories, attacks, selected) {
             const s = NS.containers.get(containerId);
             s.selected = selected;
-
             const g = s.territoriesG;
 
             territories.forEach(t => {
+                const onClickAction = (e) => {
+                    e.stopPropagation();
+                    console.log(t.id)
+                    NS.onTerritoryClicked(containerId, t.id);
+                }
+
                 // Controlla se esiste già un gruppo per questo territorio
                 let grp;
                 if (!this.territoryGroups.has(t.id)) {
                     // crea nuovo gruppo
                     grp = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                    const onClickAction = (e) => {
-                        e.stopPropagation();
-                        NS.onTerritoryClicked(containerId, t);
-                    }
 
                     // polygon principale
                     const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
@@ -115,7 +116,7 @@
                     // salva il riferimento per i prossimi render
                     this.territoryGroups.set(t.id, grp);
                     s.territoriesMap.set(t.id, t);
-                    
+
                     return;
                 }
                 grp = this.territoryGroups.get(t.id);
@@ -123,12 +124,13 @@
                 // aggiorna proprietà esistenti
                 const poly = grp.querySelector('polygon');
                 let color;
-                if (t.ownerId === undefined || t.ownerId === null) {
+                if (t.ownerId === undefined || t.ownerId === null || t.ownerId === "") {
                     color = s.neutralColor
                 } else {
                     color = s.playerColors.at(this.playerIds.indexOf(t.ownerId));
                 }
-                poly.setAttribute('fill', color);
+
+                poly.style.fill = color;
 
                 const txt = grp.querySelector('text');
                 txt.textContent = t.troops;
@@ -142,8 +144,8 @@
             this.drawAttacks(attacks, s);
         },
         drawAttacksGivenId(attacks, id) {
-          const rootElement = NS.containers.get(id);
-          this.drawAttacks(attacks, rootElement);
+            const rootElement = NS.containers.get(id);
+            this.drawAttacks(attacks, rootElement);
         },
         drawAttacks(attacks, rootElement) {
             const ag = rootElement.attacksG;
@@ -153,9 +155,10 @@
                 const f = NS.centroid(attackerTerritory.shape);
                 const t = NS.centroid(rootElement.territoriesMap.get(a.defenderTerritoryId).shape);
                 const cx = (f.x + t.x) / 2, cy = (f.y + t.y) / 2 - 60;
-                const p = Math.max(0, Math.min(1, a.progress));
+                const p = Math.min(1, (Math.max(0, a.progress) / 100) / 100);
                 const px = (1 - p) * (1 - p) * f.x + 2 * (1 - p) * p * cx + p * p * t.x;
                 const py = (1 - p) * (1 - p) * f.y + 2 * (1 - p) * p * cy + p * p * t.y;
+
                 const grp = document.createElementNS('http://www.w3.org/2000/svg', 'g');
                 grp.setAttribute('transform', `translate(${px - 10},${py - 10})`);
                 const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -165,9 +168,11 @@
                 ag.appendChild(grp);
             });
         },
-        onTerritoryClicked(id, territory) {
+        onTerritoryClicked(id, territoryId) {
             const s = NS.containers.get(id);
-            if (s.dotNetRef) s.dotNetRef.invokeMethodAsync('OnTerritoryClicked', territory);
+            if (s.dotNetRef) {
+                s.dotNetRef.invokeMethodAsync('OnTerritoryClicked', territoryId);
+            }
         },
         dispose(id) {
             const s = NS.containers.get(id);

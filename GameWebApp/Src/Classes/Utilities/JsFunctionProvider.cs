@@ -43,7 +43,7 @@ public static class JsFunctionProvider
         );
     }
 
-    public static async Task renderAttacks(IJSRuntime jsRuntime, GameState gameState)
+    public static async Task RenderAttacks(IJSRuntime jsRuntime, GameState gameState)
     {
         await jsRuntime.InvokeVoidAsync("warboard.drawAttacksGivenId", gameState.Attacks, "map-root");
     }

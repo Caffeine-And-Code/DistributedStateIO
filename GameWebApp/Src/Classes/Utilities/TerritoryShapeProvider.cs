@@ -47,7 +47,9 @@ public sealed class TerritoryShapeProvider
 
         foreach (var territory in updatedTerritories)
         {
-            _territories[territory.Id].Troops = territory.Troops;
+            var uiTerritory = _territories[territory.Id];
+            uiTerritory.Troops = territory.Troops;
+            uiTerritory.OwnerId = territory.OwnerId;
         }
 
         return _territories.Values;

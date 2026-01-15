@@ -25,6 +25,7 @@ public class GameEngine(GameSettings gameSettings) : HeadlessGameEngine(gameSett
         while (true)
         {
             gameState = UpdateGame(gameState, _fpsHelper.GetElapsedTime());
+
             await JsFunctionProvider.RenderUi(jsRuntime, gameState);
 
             await _fpsHelper.WaitForNextFrame();
@@ -38,34 +39,14 @@ public class GameEngine(GameSettings gameSettings) : HeadlessGameEngine(gameSett
             // === TIMER DELL’ANIMAZIONE ===
             _attackTimer = new ClockTimer(50);
             var state = gameState;
-            _attackTimer.Elapsed += async (_, __) => gameState = await UpdateAttacks(jsRuntime, state);
+            _attackTimer.Elapsed += async (_, __) => await UpdateAttacks(jsRuntime, state);
             _attackTimer.Start();
         }
         // ReSharper disable once FunctionNeverReturns
     }
 
-    private async Task<GameState> UpdateAttacks(IJSRuntime jsRuntime, GameState gameState)
+    private async Task UpdateAttacks(IJSRuntime jsRuntime, GameState gameState)
     {
-        var needsRefresh = false;
-
-        foreach (var attack in gameState.Attacks.ToList())
-        {
-            const int attackPercentageOfMovement = 10;
-            attack.Progress += attackPercentageOfMovement * 100;
-            await JsFunctionProvider.ConsoleLog(jsRuntime, $"Update Attacks {attack.Progress}");
-
-            if (attack.Progress >= 10000)
-            {
-                // TODO: risolvi battaglia come nel tuo engine
-                gameState.Attacks.Remove(attack);
-            }
-
-            needsRefresh = true;
-        }
-
-        if (needsRefresh)
-            await JsFunctionProvider.renderAttacks(jsRuntime, gameState);
-
-        return gameState;
+        await JsFunctionProvider.RenderAttacks(jsRuntime, gameState);
     }
 }
