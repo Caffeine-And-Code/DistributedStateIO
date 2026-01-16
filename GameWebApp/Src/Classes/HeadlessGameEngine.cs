@@ -21,8 +21,15 @@ public class HeadlessGameEngine(GameSettings gameSettings) : IGameEngine
     public GameState UpdateGame(GameState gameState, long elapsed)
     {
         gameState = DispatchEvents(gameState);
+        gameState = UpdateAttacks(ref gameState);
 
-        return UpdateAttacks(ref gameState);
+        //TODO: check what is happening with the elapsed time, now it ranges from 0 to 1 in a weird way
+        if (elapsed >= 1)
+        {
+            gameState = UpdateTroops(ref gameState);
+        }
+        
+        return gameState;
     }
 
     private GameState DispatchEvents(GameState gameState)
@@ -31,6 +38,18 @@ public class HeadlessGameEngine(GameSettings gameSettings) : IGameEngine
             gameSettings.DisconnectedTimerStartingPoint);
 
         return _dispatcher.DispatchAttacks(gameState, ref _attackQueue);
+    }
+
+    private GameState UpdateTroops(ref GameState gameState)
+    {
+        var territoriesToUpdate = gameState.Territories.FindAll(t => t.OwnerId is not null);
+
+        foreach (var territory in territoriesToUpdate)
+        {
+            territory.Troops += 1;
+        }
+
+        return gameState;
     }
 
     /**
@@ -68,7 +87,9 @@ public class HeadlessGameEngine(GameSettings gameSettings) : IGameEngine
 
             if (defender.Troops <= 0)
             {
-                defender.Troops = 0;
+                //TODO: the state should be assigned to the attacked instead of being turned to a neutral state
+                //TODO: check if there is a situation where the state should be turned to a neutral state, maybe when the subtracted troops is exactly 0
+                defender.Troops = 15;
                 defender.OwnerId = null;
             }
 

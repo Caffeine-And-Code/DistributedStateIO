@@ -25,7 +25,7 @@ public class GameEngine(GameSettings gameSettings) : HeadlessGameEngine(gameSett
         while (true)
         {
             gameState = UpdateGame(gameState, _fpsHelper.GetElapsedTime());
-
+            Console.WriteLine(_fpsHelper.GetElapsedTime());
             await JsFunctionProvider.RenderUi(jsRuntime, gameState);
 
             await _fpsHelper.WaitForNextFrame();
