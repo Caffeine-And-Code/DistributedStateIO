@@ -66,7 +66,6 @@
             territories.forEach(t => {
                 const onClickAction = (e) => {
                     e.stopPropagation();
-                    console.log(t.id)
                     NS.onTerritoryClicked(containerId, t.id);
                 }
 
@@ -119,6 +118,7 @@
 
                     return;
                 }
+                s.territoriesMap.set(t.id, t);
                 grp = this.territoryGroups.get(t.id);
 
                 // aggiorna proprietà esistenti

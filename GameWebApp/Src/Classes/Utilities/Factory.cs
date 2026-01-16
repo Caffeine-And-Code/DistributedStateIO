@@ -55,6 +55,8 @@ public abstract class Factory
             MaxTroopForNotOwnedTerritory = 15,
             MaxTroopsForOwnedTerritory = 50,
             DisconnectionSeconds = 90,
+            MaxAttackProgress = 10000,
+            AttackPercentageOfMovement = 100
         };
     }
 

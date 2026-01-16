@@ -15,21 +15,21 @@ public class GameEngine(GameSettings gameSettings) : HeadlessGameEngine(gameSett
     public static async Task Init(IJSRuntime jsRuntime, DotNetObjectReference<Home> dotNetRef, GameState gameState)
     {
         await JsFunctionProvider.InitializeUi(jsRuntime, dotNetRef, gameState);
+        TerritoryShapeProvider.Instance.Initialize(Factory.GetUiTerritories(gameState.Players, gameState.Territories));
     }
 
     public async Task StartGame(IJSRuntime jsRuntime, GameState gameState)
     {
         _fpsHelper.Initialize(_gameSettings.Fps);
-        TerritoryShapeProvider.Instance.Initialize(Factory.GetUiTerritories(gameState.Players, gameState.Territories));
 
         while (true)
         {
-            gameState = UpdateGame(gameState, _fpsHelper.GetElapsedTime());
-            Console.WriteLine(_fpsHelper.GetElapsedTime());
+            var elapsed = _fpsHelper.GetElapsedTime();
+            gameState = UpdateGame(gameState, elapsed);
+
             await JsFunctionProvider.RenderUi(jsRuntime, gameState);
 
             await _fpsHelper.WaitForNextFrame();
-            _fpsHelper.Initialize(_gameSettings.Fps);
 
             if (_attackTimer is not null)
             {

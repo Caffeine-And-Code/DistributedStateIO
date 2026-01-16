@@ -10,7 +10,7 @@
 
 <PageTitle>Home</PageTitle>
 
-@if (! string.IsNullOrEmpty(_gameConsole))
+@if (!string.IsNullOrEmpty(_gameConsole))
 {
     <h1 class="game-console">@_gameConsole</h1>
 }
@@ -32,7 +32,7 @@
         {
             _engine = new GameEngine(GameSettingsLoader.Load(Configuration));
             _dotNetRef = DotNetObjectReference.Create(this);
-            
+
             await GameEngine.Init(JsRuntime, _dotNetRef, _serverState);
             await _engine.StartGame(JsRuntime, _serverState);
         }
@@ -43,25 +43,25 @@
     {
         var territory = _serverState.Territories.First(t => t.Id == territoryId);
         var clickedElement = _serverState.Territories.FirstOrDefault(t => t.Id == _clickedElementId);
-        
+
         if (territory.OwnerId is null && clickedElement is null)
         {
             return Task.CompletedTask;
         }
-        
+
         if (clickedElement is not null)
         {
-            if (clickedElement.Id == territory.Id )
+            if (clickedElement.Id == territory.Id)
             {
                 return Task.CompletedTask;
             }
-            
+
             _gameConsole = $"{clickedElement.OwnerId} attacca/invia truppe a {territory.OwnerId}";
             _engine.AddAttackEvent(new AttackEvent
             {
                 AttackerTerritoryId = clickedElement.Id,
                 DefenderTerritoryId = territory.Id,
-                Troops = clickedElement.Troops - 1 
+                Troops = clickedElement.Troops - 1
             });
             _clickedElementId = null;
             StateHasChanged();
