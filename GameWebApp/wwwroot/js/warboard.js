@@ -87,13 +87,14 @@
                     }
 
                     poly.style.fill = color;
-                    grp.appendChild(poly);
-
+                    
                     // centroide + etichetta truppe
                     const c = NS.centroid(t.shape);
                     const lg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
                     lg.setAttribute('transform', `translate(${c.x},${c.y})`);
-
+                    poly.appendChild(lg);
+                    grp.appendChild(poly);
+                    
                     const cir = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                     cir.setAttribute('r', '22');
                     cir.setAttribute('fill', 'rgba(0,0,0,0.35)');
@@ -102,7 +103,6 @@
                     const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                     txt.setAttribute('y', '6');
                     txt.setAttribute('text-anchor', 'middle');
-                    txt.setAttribute('fill', '#fff');
                     txt.textContent = t.troops;
                     txt.addEventListener('click', onClickAction);
 

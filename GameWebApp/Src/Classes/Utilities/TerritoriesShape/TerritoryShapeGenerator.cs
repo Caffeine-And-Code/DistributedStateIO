@@ -1,6 +1,6 @@
 using GameWebApp.Classes.Models;
 
-namespace GameWebApp.Classes.Utilities;
+namespace GameWebApp.Classes.Utilities.TerritoriesShape;
 
 public static class TerritoryShapeGenerator
 {

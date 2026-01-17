@@ -2,29 +2,50 @@
 @using Domain.Game
 @using Domain.Game.Events
 @using GameWebApp.Classes
-@using GameWebApp.Classes.Models
 @using GameWebApp.Classes.Utilities
 
 @inject IJSRuntime JsRuntime;
 @inject IConfiguration Configuration
 
-<PageTitle>Home</PageTitle>
+<PageTitle>GameBoard</PageTitle>
 
-@if (!string.IsNullOrEmpty(_gameConsole))
+@if (_console is not null)
 {
-    <h1 class="game-console">@_gameConsole</h1>
+    <div class="game-console">
+        @foreach (var action in _console.Actions)
+        {
+            <p class="console-action">
+                @action
+            </p>
+        }
+
+        @if (_console.Actions.Count == 0)
+        {
+            <p class="console-action">
+                Nessuna Azione Commessa, Fai un Attacco!
+            </p>
+        }
+    </div>
 }
 
+<div class="actions-list">
+    <button onclick="changeTheme('light')">
+        light
+    </button>
+    <button onclick="changeTheme('dark')">
+        dark
+    </button>
+</div>
 <div id="@JsFunctionProvider.ContainerId"></div>
 
 @code {
     private DotNetObjectReference<Home>? _dotNetRef;
-    private string _gameConsole = "";
     private GameEngine _engine = null!;
     private Guid? _clickedElementId;
 
     //TODO: when backend is ready, the initial value of this should be retrieved from it
     private readonly GameState _serverState = Factory.GetFirstGameState();
+    private GameConsole? _console;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -32,7 +53,9 @@
         {
             _engine = new GameEngine(GameSettingsLoader.Load(Configuration));
             _dotNetRef = DotNetObjectReference.Create(this);
-
+            _console = new GameConsole(_serverState.Players);
+            StateHasChanged();
+            
             await GameEngine.Init(JsRuntime, _dotNetRef, _serverState);
             await _engine.StartGame(JsRuntime, _serverState);
         }
@@ -56,13 +79,19 @@
                 return Task.CompletedTask;
             }
 
-            _gameConsole = $"{clickedElement.OwnerId} attacca/invia truppe a {territory.OwnerId}";
-            _engine.AddAttackEvent(new AttackEvent
-            {
-                AttackerTerritoryId = clickedElement.Id,
-                DefenderTerritoryId = territory.Id,
-                Troops = clickedElement.Troops - 1
-            });
+            var troopsToSent = clickedElement.Troops - 1;
+
+            _console?.AddNewAttackAction(clickedElement, territory, troopsToSent);
+
+            _engine.AddAttackEvent(
+                new AttackEvent
+                {
+                    AttackerTerritoryId = clickedElement.Id,
+                    DefenderTerritoryId = territory.Id,
+                    Troops = troopsToSent
+                }
+            );
+
             _clickedElementId = null;
             StateHasChanged();
 
@@ -70,8 +99,6 @@
         }
 
         _clickedElementId = territory.Id;
-
-        _gameConsole = $"Hai cliccato il territorio di: {territory.OwnerId}";
         StateHasChanged();
 
         return Task.CompletedTask;

@@ -1,5 +1,6 @@
 using Domain.Game;
 using GameWebApp.Classes.Utilities;
+using GameWebApp.Classes.Utilities.TerritoriesShape;
 using GameWebApp.Src.Pages;
 using Microsoft.JSInterop;
 using ClockTimer = System.Timers.Timer;

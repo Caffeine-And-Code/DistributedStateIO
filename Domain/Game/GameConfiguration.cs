@@ -4,7 +4,7 @@ public class GameConfiguration
 {
     /// <summary>
     /// number of troupe spawned at second (round 2 decimal)
-    /// fatto's comment => ???? what is this exactly ???? sorry don't remember ;(
+    /// TODO: fatto's comment: ???? what is this exactly ???? sorry don't remember ;(
     /// </summary>
     public required double SpawnRate { get; set; }
     public required int MaxTroopsForOwnedTerritory { get; init; }

@@ -1,13 +1,13 @@
 using Domain.Game;
 using GameWebApp.Classes.Models;
 
-namespace GameWebApp.Classes.Utilities;
+namespace GameWebApp.Classes.Utilities.TerritoriesShape;
 
 public sealed class TerritoryShapeProvider
 {
     private static readonly Lock Padlock = new();
 
-    TerritoryShapeProvider()
+    private TerritoryShapeProvider()
     {
     }
 
@@ -53,15 +53,5 @@ public sealed class TerritoryShapeProvider
         }
 
         return _territories.Values;
-    }
-
-    public ICollection<ShapePoint> GetShapesOfTerritory(Guid territoryId)
-    {
-        if (!_territories!.ContainsKey(territoryId))
-        {
-            return [];
-        }
-
-        return _territories[territoryId].Shape;
     }
 }

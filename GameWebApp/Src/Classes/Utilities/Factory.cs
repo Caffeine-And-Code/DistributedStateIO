@@ -1,5 +1,6 @@
 using Domain.Game;
 using GameWebApp.Classes.Models;
+using GameWebApp.Classes.Utilities.TerritoriesShape;
 
 namespace GameWebApp.Classes.Utilities;
 
