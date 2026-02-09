@@ -12,10 +12,10 @@
     --dark-high-contrast: var(--light-bg);
 
     /* --- current theme --- */
-    --bg: var(--dark-bg);
-    --overlay: var(--dark-overlay-bg);
-    --contrast: var(--dark-contrast);
-    --high-contrast: var(--dark-high-contrast);
+    --bg: var(--light-bg);
+    --overlay: var(--light-overlay-bg);
+    --contrast: var(--light-contrast);
+    --high-contrast: var(--light-high-contrast);
 }
 
 html, body {
@@ -44,8 +44,8 @@ html, body {
     min-height: 50px;
     max-height: 250px;
     min-width: 450px;
-    border-bottom-right-radius: 15px;
-    border-top-right-radius: 15px;
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
     padding: 20px;
     overflow-y: hidden;
 
@@ -66,7 +66,7 @@ html, body {
     margin: 0;
     padding-left: 10px;
     font-size: 18px;
-    color: var(--contrast);
+    color: var(--high-contrast);
     padding-bottom: 10px;
 }
 

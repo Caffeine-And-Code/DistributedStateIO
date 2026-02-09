@@ -18,7 +18,7 @@ public class GameConsole(List<Player> players)
         Actions.Add(
             attacker.IsAlly(defender)
                 ? $"{attackerName} invia {troopsToSend} truppe a {defenderName}"
-                : $"{attackerName} attacca con {troopsToSend} truppe a {defenderName}"
+                : $"{attackerName} attacca con {troopsToSend} truppe {defenderName}"
         );
     }
 }

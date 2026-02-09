@@ -3,6 +3,7 @@
 @using Domain.Game.Events
 @using GameWebApp.Classes
 @using GameWebApp.Classes.Utilities
+@using GameWebApp.Src.Components
 
 @inject IJSRuntime JsRuntime;
 @inject IConfiguration Configuration
@@ -29,12 +30,7 @@
 }
 
 <div class="actions-list">
-    <button onclick="changeTheme('light')">
-        light
-    </button>
-    <button onclick="changeTheme('dark')">
-        dark
-    </button>
+    <SwitchThemeButton />
 </div>
 <div id="@JsFunctionProvider.ContainerId"></div>
 

@@ -1,7 +1,12 @@
 function changeTheme(theme) {
+    if(theme === true){
+        theme = "dark"
+    }else{
+        theme = "light"
+    }
     localStorage.setItem('theme', theme)
     const style = document.documentElement.style
-    
+
     if (theme === "light") {
         style.setProperty("--bg", "var(--light-bg)");
         style.setProperty("--overlay", "var(--light-overlay-bg)");
@@ -14,3 +19,5 @@ function changeTheme(theme) {
         style.setProperty("--high-contrast", "var(--dark-high-contrast)");
     }
 }
+
+document.getElementById('color_mode').addEventListener("click", (e) => changeTheme(e.target.checked));
