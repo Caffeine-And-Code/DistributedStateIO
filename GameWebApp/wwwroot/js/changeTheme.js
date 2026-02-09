@@ -1,23 +1,35 @@
+const THEME_KEY = 'theme';
+const LIGHT_THEME_KEY = 'light';
+const DARK_THEME_KEY = 'dark';
+
 function changeTheme(theme) {
-    if(theme === true){
-        theme = "dark"
-    }else{
-        theme = "light"
+    if (theme === true) {
+        theme = DARK_THEME_KEY
+    } else {
+        theme = LIGHT_THEME_KEY
     }
-    localStorage.setItem('theme', theme)
+
+    localStorage.setItem(THEME_KEY, theme)
     const style = document.documentElement.style
 
-    if (theme === "light") {
-        style.setProperty("--bg", "var(--light-bg)");
-        style.setProperty("--overlay", "var(--light-overlay-bg)");
-        style.setProperty("--contrast", "var(--light-contrast)");
-        style.setProperty("--high-contrast", "var(--light-high-contrast)");
-    } else if (theme === "dark") {
-        style.setProperty("--bg", "var(--dark-bg)");
-        style.setProperty("--overlay", "var(--dark-overlay-bg)");
-        style.setProperty("--contrast", "var(--dark-contrast)");
-        style.setProperty("--high-contrast", "var(--dark-high-contrast)");
-    }
+    style.setProperty("--bg", `var(--${theme}-bg)`);
+    style.setProperty("--overlay", `var(--${theme}-overlay-bg)`);
+    style.setProperty("--contrast", `var(--${theme}-contrast)`);
+    style.setProperty("--high-contrast", `var(--${theme}-high-contrast)`);
 }
 
-document.getElementById('color_mode').addEventListener("click", (e) => changeTheme(e.target.checked));
+function checkTheme(input) {
+    const currentTheme = localStorage.getItem(THEME_KEY);
+    const checkValue = !(currentTheme === null || currentTheme === LIGHT_THEME_KEY);
+
+    if(checkValue) {
+        input.checked = "checked";    
+    }
+
+    changeTheme(checkValue);
+}
+
+const input = document.getElementById('color_mode')
+
+checkTheme(input)
+input.addEventListener("click", (e) => changeTheme(e.target.checked));
